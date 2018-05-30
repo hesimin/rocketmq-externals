@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   namesrv:
     build:
@@ -7,9 +7,11 @@ services:
         - version=4.1.0-incubating
     ports:
       - 9876:9876
+    networks:
+      - rocketmq
     volumes:
-      - ./namesrv/logs:/opt/logs
-      - ./namesrv/store:/opt/store
+      - rocketmq-namesrv-logs:/opt/logs
+      - rocketmq-namesrv-store:/opt/store
   broker:
     build:
       context: ./broker
@@ -18,8 +20,27 @@ services:
     ports:
       - 10909:10909
       - 10911:10911
+    networks:
+      - rocketmq
     volumes:
-      - ./broker/logs:/opt/logs
-      - ./broker/store:/opt/store
+      - rocketmq-broker-logs:/opt/logs
+      - rocketmq-broker-store:/opt/store
     depends_on:
       - namesrv
+  console:
+    image: styletang/rocketmq-console-ng:latest
+    networks:
+      - rocketmq
+    volumes:
+     - /etc/localtime:/etc/localtime:ro
+    ports:
+     - "18080:8080"
+    environment:
+     JAVA_OPTS: -Drocketmq.config.namesrvAddr=namesrv:9876
+networks:
+  rocketmq:
+volumes:
+  rocketmq-namesrv-logs:
+  rocketmq-namesrv-store:
+  rocketmq-broker-logs:
+  rocketmq-broker-store:
