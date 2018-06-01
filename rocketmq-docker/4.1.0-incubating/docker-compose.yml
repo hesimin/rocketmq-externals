@@ -17,6 +17,7 @@ services:
       context: ./broker
       args:
         - version=4.1.0-incubating
+        - brokerIP1=192.168.51.27
     ports:
       - 10909:10909
       - 10911:10911

@@ -20,6 +20,8 @@ FROM java:8
 
 ARG version
 
+ARG brokerIP1
+
 # Rocketmq version
 ENV ROCKETMQ_VERSION ${version}
 
@@ -43,7 +45,9 @@ RUN curl https://dist.apache.org/repos/dist/release/rocketmq/${ROCKETMQ_VERSION}
 
 RUN chmod +x bin/mqbroker
 
-CMD cd ${ROCKETMQ_HOME}/bin && export JAVA_OPT=" -Duser.home=/opt" && sh mqbroker -n namesrv:9876
+RUN cd ${ROCKETMQ_HOME}/conf && echo "brokerIP1 = ${brokerIP1}">>broker.conf
+
+CMD cd ${ROCKETMQ_HOME}/bin && export JAVA_OPT=" -Duser.home=/opt" && sh mqbroker -n namesrv:9876 -c ../conf/broker.conf
 
 
 EXPOSE 10909 10911
